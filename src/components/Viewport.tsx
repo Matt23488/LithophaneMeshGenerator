@@ -27,8 +27,22 @@ const Viewport: React.FC<ViewportProperties> = props => {
     const onImageLoaded = useCallback(() => {
         if (!hiddenImgRef.current || !canvasRef.current) return;
 
+        const aspectRatio = hiddenImgRef.current.width / hiddenImgRef.current.height;
+        let x = 0;
+        let y = 0;
+        let width = canvasWidth;
+        let height = canvasHeight;
+
+        if (aspectRatio > 1) {
+            height = canvasHeight / aspectRatio;
+            y = Math.floor((canvasHeight - height) / 2);
+        } else if (aspectRatio < 1) {
+            width = canvasWidth * aspectRatio;
+            x = Math.floor((canvasWidth - width) / 2);
+        }
+
         const context = canvasRef.current.getContext('2d');
-        context?.drawImage(hiddenImgRef.current, 0, 0, canvasWidth, canvasHeight);
+        context?.drawImage(hiddenImgRef.current, x, y, width, height);
     }, [hiddenImgRef, canvasRef, canvasWidth, canvasHeight]);
 
     useEffect(() => onImageLoaded(), [canvasWidth, canvasHeight]);
