@@ -76,11 +76,6 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
                         ref={directEditInput}
                         className="value-display"
                         type="text"
-                        style={{
-                            textAlign: 'center',
-                            border: '0',
-                            padding: '0'
-                        }}
                         value={directEditValue}
                         onChange={e => setDirectEditValue(e.target.value)}
                         onKeyPress={onDirectEditKeyPress}
@@ -89,10 +84,6 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
                     <div
                         className="value-display"
                         onClick={onDirectEdit}
-                        style={{
-                            flexGrow: 1,
-                            textAlign: 'center'
-                        }}
                     >{props.value.toFixed(precision)}{props.suffix}</div>
                 }
                 <button className="button" onClick={onIncrement}>&gt;</button>

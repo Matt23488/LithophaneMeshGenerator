@@ -33,7 +33,7 @@ function App() {
         }
       </div>
       <div className="viewport-container">
-        <Viewport imageDataUrl={imageDataUrl} />
+        <Viewport imageDataUrl={imageDataUrl} imageBrightnessModifier={brightnessModifer} imageSampleCount={sampleCount} />
       </div>
     </div>
   );

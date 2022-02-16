@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { adjustBrightness, adjustSampleCount, toGrayscale } from '../imageProcessing';
 import { useCanvasContext2d, useFlag, useWindowResizeEvent } from '../utilities';
 
 import './css/ImageCanvasDisplay.css';
 
 const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
-    const { hiddenImageRef, hiddenCanvasRef, originalImageWidth, originalImageHeight, onImageLoad, drawImageFlag } = useHiddenImageData();
+    const { hiddenImageRef, hiddenCanvasRef, originalImageWidth, originalImageHeight, onImageLoad, drawImageFlag } = useHiddenImageData(props.brightnessModifier, props.sampleCount);
     const { visibleCanvasRef, canvasWidth, canvasHeight, canvasContext } = useCanvasData(hiddenCanvasRef, drawImageFlag);
 
     
@@ -70,7 +71,7 @@ const useCanvasData = (hiddenCanvasRef: React.RefObject<HTMLCanvasElement>, draw
     };
 };
 
-const useHiddenImageData = () => {
+const useHiddenImageData = (brightnessModifier: number, sampleCount: number) => {
     const hiddenImageRef = useRef<HTMLImageElement>(null);
     const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
     const hiddenCanvasContext = useCanvasContext2d(hiddenCanvasRef);
@@ -91,12 +92,19 @@ const useHiddenImageData = () => {
     const [drawImageFlag, raiseDrawImageFlag] = useFlag();
 
     useEffect(() => {
-        if (!hiddenCanvasContext || !hiddenImageRef.current) return;
+        if (!hiddenCanvasContext || !hiddenImageRef.current || originalImageWidth === 0 || originalImageHeight === 0) return;
 
         hiddenCanvasContext.drawImage(hiddenImageRef.current, 0, 0, originalImageWidth, originalImageHeight);
+
+        let pixels = hiddenCanvasContext.getImageData(0, 0, originalImageWidth, originalImageHeight);
+        pixels = toGrayscale(pixels);
+        pixels = adjustBrightness(pixels, brightnessModifier);
+        pixels = adjustSampleCount(pixels, sampleCount);
+        hiddenCanvasContext.putImageData(pixels, 0, 0);
+
         raiseDrawImageFlag();
 
-    }, [drawNewImageFlag, hiddenImageRef, hiddenCanvasContext, originalImageWidth, originalImageHeight, raiseDrawImageFlag]);
+    }, [drawNewImageFlag, hiddenImageRef, hiddenCanvasContext, originalImageWidth, originalImageHeight, brightnessModifier, sampleCount, raiseDrawImageFlag]);
 
     return {
         hiddenImageRef,
@@ -110,6 +118,8 @@ const useHiddenImageData = () => {
 
 export interface ImageCanvasDisplayProperties {
     imageDataUrl: string;
+    brightnessModifier: number;
+    sampleCount: number;
 }
 
 export default ImageCanvasDisplay;

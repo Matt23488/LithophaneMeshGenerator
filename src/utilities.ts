@@ -34,4 +34,10 @@ export const useCanvasContext2d = (canvasRef: React.RefObject<HTMLCanvasElement>
     }, [canvasRef]);
 
     return context;
-}
+};
+
+export const lerp = (min: number, max: number, t: number) => t * max + (1 - t) * min;
+
+export const iLerp = (min: number, max: number, val: number) => (val - min) / (max - min);
+
+export const map = (fromMin: number, fromMax: number, toMin: number, toMax: number, val: number) => lerp(toMin, toMax, iLerp(fromMin, fromMax, val));

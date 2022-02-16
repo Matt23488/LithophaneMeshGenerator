@@ -12,4 +12,10 @@
 
 .NumberInput .value-display {
     width: 150px;
+    display: grid;
+    place-items: center;
+    flex-grow: 1;
+    text-align: center;
+    border: 0;
+    padding: 0;
 }
