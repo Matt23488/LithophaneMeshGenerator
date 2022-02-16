@@ -13,5 +13,5 @@ export const useWindowResizeEvent = (callback: (width: number, height: number) =
         return () => {
             window.removeEventListener('resize', wrappedCallback);
         };
-    }, []);
+    }, [callback]);
 };

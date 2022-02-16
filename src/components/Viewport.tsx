@@ -22,7 +22,7 @@ const Viewport: React.FC<ViewportProperties> = props => {
     }, [containerRef]);
 
     useWindowResizeEvent(onWindowResized);
-    useEffect(() => onWindowResized(window.innerWidth, window.innerHeight), []);
+    useEffect(() => onWindowResized(window.innerWidth, window.innerHeight), [onWindowResized]);
 
     const onImageLoaded = useCallback(() => {
         if (!hiddenImgRef.current || !canvasRef.current) return;
@@ -45,11 +45,11 @@ const Viewport: React.FC<ViewportProperties> = props => {
         context?.drawImage(hiddenImgRef.current, x, y, width, height);
     }, [hiddenImgRef, canvasRef, canvasWidth, canvasHeight]);
 
-    useEffect(() => onImageLoaded(), [canvasWidth, canvasHeight]);
+    useEffect(() => onImageLoaded(), [canvasWidth, canvasHeight, onImageLoaded]);
 
     return (
         <div ref={containerRef} className="Viewport">
-            <img ref={hiddenImgRef} src={props.imageDataUrl} style={{ display: 'none' }} onLoad={onImageLoaded} />
+            <img ref={hiddenImgRef} alt="" src={props.imageDataUrl} style={{ display: 'none' }} onLoad={onImageLoaded} />
             <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
         </div>
     );

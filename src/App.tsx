@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import InputImageBrowser from './components/InputImageBrowser';
 import NumberInput from './components/NumberInput';
