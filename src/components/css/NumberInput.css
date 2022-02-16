@@ -1,0 +1,15 @@
+.NumberInput {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.NumberInput .interactable {
+    display: flex;
+    flex-direction: row;
+    /* width: 250px; */
+}
+
+.NumberInput .value-display {
+    width: 150px;
+}

@@ -1,0 +1,35 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.ui {
+  width: 400px;
+  padding: 10px;
+  background-color: #daf;
+  display: flex;
+  flex-direction: column;
+}
+
+.ui > * {
+  margin-bottom: 5px;
+}
+
+.viewport-container {
+  flex: 1 1 auto;
+  background-color: #333;
+  color: white;
+  display: grid;
+  place-items: center;
+}
+
+.button {
+  background-color: #a0f;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  padding: 5px;
+  border: 0;
+  cursor: pointer;
+}
