@@ -6,7 +6,7 @@ import './css/Viewport.css';
 import ImageCanvasDisplay from './ImageCanvasDisplay';
 
 const Viewport: React.FC<ViewportProperties> = props => {
-    const [mode, setMode] = useState(ViewportMode.mesh);
+    const [mode, setMode] = useState(ViewportMode.image);
 
     const vertices = new Float32Array([
         -1, -1, 1,
@@ -23,7 +23,7 @@ const Viewport: React.FC<ViewportProperties> = props => {
                 <button className="button mode-button" onClick={() => setMode(ViewportMode.image)}>Image</button>
                 <button className="button mode-button" onClick={() => setMode(ViewportMode.mesh)}>Mesh</button>
             </div>
-            <div style={{ display: mode === ViewportMode.image ? 'block' : 'none' }}>
+            <div style={{ width: '100%', height: '100%', display: mode === ViewportMode.image ? 'block' : 'none' }}>
                 <ImageCanvasDisplay imageDataUrl={props.imageDataUrl} brightnessModifier={props.imageBrightnessModifier} sampleCount={props.imageSampleCount} />
             </div>
             <Canvas style={{ display: mode === ViewportMode.mesh ? 'block' : 'none' }}>
