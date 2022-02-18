@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import './App.css';
 import InputImageBrowser from './components/InputImageBrowser';
 import NumberInput from './components/NumberInput';
@@ -33,7 +33,9 @@ function App() {
         }
       </div>
       <div className="viewport-container">
-        <Viewport imageDataUrl={imageDataUrl} imageBrightnessModifier={brightnessModifer} imageSampleCount={sampleCount} />
+        <Suspense fallback={null}>
+          <Viewport imageDataUrl={imageDataUrl} imageBrightnessModifier={brightnessModifer} imageSampleCount={sampleCount} />
+        </Suspense>
       </div>
     </div>
   );

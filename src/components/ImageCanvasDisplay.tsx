@@ -11,9 +11,9 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
     const hiddenImageRef = useRef<HTMLImageElement>(null);
     const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
     const visibleCanvasRef = useRef<HTMLCanvasElement>(null);
-    
-    const redrawImage = useCallback(() => {
-        if (!hiddenCanvasRef.current || !hiddenImageRef.current || !visibleCanvasRef.current) return;
+
+    const onImageLoad = useCallback(() => {
+        if (!hiddenCanvasRef.current || !hiddenImageRef.current) return;
 
         const aspectRatio = hiddenImageRef.current.width / hiddenImageRef.current.height;
         let widthSamples = sampleCount;
@@ -35,19 +35,29 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
         let pixels = context.getImageData(0, 0, widthSamples, heightSamples);
         pixels = toGrayscale(pixels);
-        pixels.data.forEach((p, i, arr) => arr[i] *= brightnessModifier);
+        for (let i = 0; i < pixels.data.length; i += 4) {
+            pixels.data[i + 0] *= brightnessModifier;
+            pixels.data[i + 1] *= brightnessModifier;
+            pixels.data[i + 2] *= brightnessModifier;
+        }
         context.putImageData(pixels, 0, 0);
 
-        const resizedAspectRatio = pixels.width / pixels.height;
+        redrawImage();
+    }, [hiddenCanvasRef, hiddenImageRef, brightnessModifier, sampleCount]);
+    
+    const redrawImage = useCallback(() => {
+        if (!hiddenCanvasRef.current || !visibleCanvasRef.current) return;
+
+        const resizedAspectRatio = hiddenCanvasRef.current.width / hiddenCanvasRef.current.height;
         let x = 0;
         let y = 0;
         let { width: resizedWidth, height: resizedHeight } = visibleCanvasRef.current;
 
         if (resizedAspectRatio > 1) {
-            resizedHeight /= aspectRatio;
+            resizedHeight /= resizedAspectRatio;
             y = Math.floor((visibleCanvasRef.current.height - resizedHeight) / 2);
         } else if (resizedAspectRatio < 1) {
-            resizedWidth *= aspectRatio;
+            resizedWidth *= resizedAspectRatio;
             x = Math.floor((visibleCanvasRef.current.width - resizedWidth) / 2);
         }
 
@@ -58,9 +68,9 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         visibleCanvasContext.imageSmoothingEnabled = false;
         visibleCanvasContext.fillRect(0, 0, visibleCanvasRef.current.width, visibleCanvasRef.current.height);
         visibleCanvasContext.drawImage(hiddenCanvasRef.current, x, y, resizedWidth, resizedHeight);
-    }, [brightnessModifier, sampleCount, hiddenImageRef, hiddenCanvasRef, visibleCanvasRef]);
+    }, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
 
-    useEffect(redrawImage, [brightnessModifier, sampleCount, hiddenImageRef, hiddenCanvasRef, visibleCanvasRef]);
+    useEffect(onImageLoad, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
 
     const onWindowResized = useCallback((width: number, height: number) => {
         if (!visibleCanvasRef.current) return;
@@ -82,7 +92,7 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         <div className="ImageCanvasDisplay">
             <canvas ref={visibleCanvasRef} />
             <div style={{ display: 'none' }}>
-                <img ref={hiddenImageRef} alt="" src={imageDataUrl} onLoad={redrawImage} />
+                <img ref={hiddenImageRef} alt="" src={imageDataUrl} onLoad={onImageLoad} />
                 <canvas ref={hiddenCanvasRef} />
             </div>
         </div>
