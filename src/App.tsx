@@ -34,7 +34,7 @@ function App() {
       </div>
       <div className="viewport-container">
         <Suspense fallback={null}>
-          <Viewport imageDataUrl={imageDataUrl} imageBrightnessModifier={brightnessModifer} imageSampleCount={sampleCount} />
+          <Viewport imageDataUrl={imageDataUrl} imageBrightnessModifier={brightnessModifer} imageSampleCount={sampleCount} surfaceThickness={surfaceThickness} backThickness={backThickness} sideLength={sideLength} />
         </Suspense>
       </div>
     </div>

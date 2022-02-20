@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { toGrayscale } from '../imageProcessing';
+import { HeightData } from '../lithophaneMesh';
 import { useWindowResizeEvent } from '../utilities';
 
 import './css/ImageCanvasDisplay.css';
 
 const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
-    const { sampleCount, brightnessModifier, imageDataUrl } = props;
+    const { sampleCount, brightnessModifier, imageDataUrl, onHeightDataChanged } = props;
 
     const hiddenImageRef = useRef<HTMLImageElement>(null);
     const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -68,7 +69,21 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         visibleCanvasContext.imageSmoothingEnabled = false;
         visibleCanvasContext.fillRect(0, 0, visibleCanvasRef.current.width, visibleCanvasRef.current.height);
         visibleCanvasContext.drawImage(hiddenCanvasRef.current, x, y, resizedWidth, resizedHeight);
-    }, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
+
+        const hiddenCanvasContext = hiddenCanvasRef.current.getContext('2d');
+        if (!hiddenCanvasContext) return;
+
+        const pixels = hiddenCanvasContext.getImageData(0, 0, hiddenCanvasRef.current.width, hiddenCanvasRef.current.height);
+
+
+        const heightData: HeightData = {
+            data: [...pixels.data.filter((_, i) => i % 4 === 0)].map(val => val / 255),
+            width: hiddenCanvasRef.current.width,
+            height: hiddenCanvasRef.current.height
+        };
+
+        onHeightDataChanged(heightData);
+    }, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef, onHeightDataChanged]);
 
     useEffect(onImageLoad, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
 
@@ -103,6 +118,7 @@ export interface ImageCanvasDisplayProperties {
     imageDataUrl: string;
     brightnessModifier: number;
     sampleCount: number;
+    onHeightDataChanged: (heightData: HeightData) => void;
 }
 
 export default ImageCanvasDisplay;

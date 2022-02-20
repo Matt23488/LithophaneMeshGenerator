@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 
 import './css/MeshViewer.css';
+import { generateMesh, HeightData, LithophaneProperties } from '../lithophaneMesh';
 
 const MeshViewer: React.FC<MeshViewerProperties> = props => {
     const vertices = new Float32Array([
@@ -22,6 +23,10 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
         0, 0, 1,
     ]);
 
+    const { lithophaneProps } = props;
+
+    const lithophaneMesh = useMemo(() => lithophaneProps && generateMesh(lithophaneProps).toThreeMesh(), [lithophaneProps]);
+
     return (
         <div className="MeshViewer">
             <Canvas camera={{ position: [0, 5, 5], rotation: [-45, 0, 0] }}>
@@ -32,13 +37,14 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
                         <bufferAttribute attachObject={['attributes', 'normal']} count={normals.length / 3} array={normals} itemSize={3} />
                     </bufferGeometry>
                 </mesh>
+                {lithophaneMesh}
             </Canvas>
         </div>
     );
 };
 
 export interface MeshViewerProperties {
-
+    lithophaneProps?: LithophaneProperties;
 }
 
 export default MeshViewer;
