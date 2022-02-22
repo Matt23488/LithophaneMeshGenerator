@@ -7,13 +7,11 @@ const noFileSelectedText = "No Image Selected";
 const InputImageBrowser: React.FC<InputImageBrowserProperties> = props => {
     const hiddenInputRef = useRef<HTMLInputElement>(null);
 
-    const [file, setFile] = useState<File>();
-
-    const { onImageLoaded } = props;
+    const { file, onChange, onImageLoaded } = props;
 
     const onImageSelected = useCallback<React.ChangeEventHandler<HTMLInputElement>>(e => {
         const newFile = e.target.files?.[0];
-        setFile(newFile);
+        onChange(newFile);
 
         if (!newFile) {
             onImageLoaded('');
@@ -45,6 +43,8 @@ const InputImageBrowser: React.FC<InputImageBrowserProperties> = props => {
 };
 
 export interface InputImageBrowserProperties {
+    file?: File;
+    onChange: (file?: File) => void;
     onImageLoaded: (dataUrl: string) => void;
 }
 

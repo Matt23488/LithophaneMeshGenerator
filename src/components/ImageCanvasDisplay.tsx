@@ -32,6 +32,7 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         const context = canvas.getContext('2d');
         if (!context) return;
 
+        context.imageSmoothingEnabled = false;
         context.drawImage(hiddenImageRef.current, 0, 0, widthSamples, heightSamples);
 
         let pixels = context.getImageData(0, 0, widthSamples, heightSamples);
