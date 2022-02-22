@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
+import { FaImage } from 'react-icons/fa';
 
 import './css/InputImageBrowser.css';
 
@@ -34,7 +35,10 @@ const InputImageBrowser: React.FC<InputImageBrowserProperties> = props => {
     return (
         <div className="InputImageBrowser">
             <input ref={hiddenInputRef} type="file" onChange={onImageSelected} />
-            <button className="button" onClick={() => hiddenInputRef.current?.click()}>Browse</button>
+            <button className="button" onClick={() => hiddenInputRef.current?.click()}>
+                <FaImage />
+                <div style={{ marginLeft: '5px' }}>Browse</div>
+            </button>
             <div className="file-name">{file?.name ?? noFileSelectedText}</div>
         </div>
     );

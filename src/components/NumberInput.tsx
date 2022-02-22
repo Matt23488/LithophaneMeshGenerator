@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FaAngleLeft, FaAngleRight, FaAngleDoubleLeft, FaAngleDoubleRight } from 'react-icons/fa'
 import { clamp } from '../utilities';
 
 import './css/NumberInput.css';
@@ -69,8 +70,12 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
         <div className="NumberInput">
             <div>{props.name}</div>
             <div className="interactable">
-                <button className="button" onClick={onFastDecrement} style={{ marginRight: '1px' }}>&lt;&lt;</button>
-                <button className="button" onClick={onDecrement}>&lt;</button>
+                <button className="button" onClick={onFastDecrement} style={{ marginRight: '1px' }}>
+                    <FaAngleDoubleLeft />
+                </button>
+                <button className="button" onClick={onDecrement}>
+                    <FaAngleLeft />
+                </button>
                 {editing ?
                     <input
                         ref={directEditInput}
@@ -86,8 +91,12 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
                         onClick={onDirectEdit}
                     >{props.value.toFixed(precision)}{props.suffix}</div>
                 }
-                <button className="button" onClick={onIncrement}>&gt;</button>
-                <button className="button" onClick={onFastIncrement} style={{ marginLeft: '1px' }}>&gt;&gt;</button>
+                <button className="button" onClick={onIncrement}>
+                    <FaAngleRight />
+                </button>
+                <button className="button" onClick={onFastIncrement} style={{ marginLeft: '1px' }}>
+                    <FaAngleDoubleRight />
+                </button>
             </div>
         </div>
     );

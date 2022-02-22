@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { HeightData, LithophaneProperties } from '../lithophaneMesh';
+import React, { Suspense, useMemo, useState } from 'react';
+import { HeightData, LithophaneMesh, LithophaneProperties } from '../lithophaneMesh';
 
 import './css/Viewport.css';
 import ImageCanvasDisplay from './ImageCanvasDisplay';
 import MeshViewer from './MeshViewer';
 
 const Viewport: React.FC<ViewportProperties> = props => {
-    const [mode, setMode] = useState(ViewportMode.mesh);
+    const [mode, setMode] = useState(ViewportMode.image);
     const [heightData, setHeightData] = useState<HeightData>();
 
     const { surfaceThickness, backThickness, sideLength } = props;
@@ -39,10 +39,12 @@ const Viewport: React.FC<ViewportProperties> = props => {
                 <button className="button mode-button" onClick={() => setMode(ViewportMode.mesh)}>Mesh</button>
             </div>
             <div style={{ width: '100%', height: '100%', display: mode === ViewportMode.image ? 'block' : 'none' }}>
-                <ImageCanvasDisplay imageDataUrl={props.imageDataUrl} brightnessModifier={props.imageBrightnessModifier} sampleCount={props.imageSampleCount} onHeightDataChanged={setHeightData} />
+                <ImageCanvasDisplay imageDataUrl={props.imageDataUrl} brightnessModifier={props.imageBrightnessModifier} sampleCount={props.imageSampleCount} onHeightDataChanged={props.onHeightDataUpdated} />
             </div>
             <div style={{ width: '100%', height: '100%', display: mode === ViewportMode.mesh ? 'block' : 'none' }}>
-                <MeshViewer lithophaneProps={lithphaneProps} />
+                <Suspense fallback={<>Loading mesh...</>}>
+                    <MeshViewer mesh={props.mesh} />
+                </Suspense>
             </div>
         </div>
     );
@@ -60,6 +62,9 @@ export interface ViewportProperties {
     surfaceThickness: number;
     backThickness: number;
     sideLength: number;
+    mesh?: LithophaneMesh;
+    // onMeshUpdated: (mesh: LithophaneMesh) => void;
+    onHeightDataUpdated: (heightData: HeightData) => void;
 }
 
 export default Viewport;

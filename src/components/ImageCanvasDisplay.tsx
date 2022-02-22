@@ -77,7 +77,7 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
 
         const heightData: HeightData = {
-            data: [...pixels.data.filter((_, i) => i % 4 === 0)].map(val => val / 255),
+            data: [...pixels.data.filter((_, i) => i % 4 === 0)].map(val => 1 - val / 255),
             width: hiddenCanvasRef.current.width,
             height: hiddenCanvasRef.current.height
         };
