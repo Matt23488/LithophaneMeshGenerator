@@ -29,87 +29,232 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
     const surfaceMax = backThickness + surfaceThickness;
     const deltaX = widthMm / heightData.width;
     const deltaZ = heightMm / heightData.height;
+    const baselineOffset = 4 * heightData.width * heightData.height;
 
-    let offsetX = -widthMm / 2;
-    let offsetZ = -heightMm / 2;
-    for (let z = 0; z < heightData.height; z++) {
-        for (let x = 0; x < heightData.width; x++) {
-            const i = z * heightData.width + x;
-            const cellY = map(0, 1, surfaceMin, surfaceMax, heightData.data[i]);
-            vertices.push([offsetX, cellY, offsetZ]);
-            vertices.push([offsetX, cellY, offsetZ + deltaZ]);
-            vertices.push([offsetX + deltaX, cellY, offsetZ + deltaZ]);
-            vertices.push([offsetX + deltaX, cellY, offsetZ]);
+    { // surface
+        let offsetX = -widthMm / 2;
+        let offsetZ = -heightMm / 2;
+        for (let z = 0; z < heightData.height; z++) {
+            for (let x = 0; x < heightData.width; x++) {
+                const i = z * heightData.width + x;
+                const cellY = map(0, 1, surfaceMin, surfaceMax, heightData.data[i]);
+                vertices.push([offsetX, cellY, offsetZ]);
+                vertices.push([offsetX, cellY, offsetZ + deltaZ]);
+                vertices.push([offsetX + deltaX, cellY, offsetZ + deltaZ]);
+                vertices.push([offsetX + deltaX, cellY, offsetZ]);
+
+                if (z > 0) {
+                    const indices = [
+                        vertices.length - 4*heightData.width - 3,
+                        vertices.length - 4,
+                        vertices.length - 1,
+                        vertices.length - 4*heightData.width - 2,
+                    ];
+                    facets.push([[
+                        indices[0],
+                        indices[1],
+                        indices[2]
+                    ], calculateNormal(
+                        vertices[indices[0]],
+                        vertices[indices[1]],
+                        vertices[indices[2]]
+                    )]);
+                    facets.push([[
+                        indices[2],
+                        indices[3],
+                        indices[0]
+                    ], calculateNormal(
+                        vertices[indices[2]],
+                        vertices[indices[3]],
+                        vertices[indices[0]]
+                    )]);
+                }
+
+                if (x > 0) {
+                    const indices = [
+                        vertices.length - 6,
+                        vertices.length - 3,
+                        vertices.length - 4,
+                        vertices.length - 5,
+                    ];
+                    facets.push([[
+                        indices[0],
+                        indices[1],
+                        indices[2]
+                    ], calculateNormal(
+                        vertices[indices[0]],
+                        vertices[indices[1]],
+                        vertices[indices[2]]
+                    )]);
+                    facets.push([[
+                        indices[2],
+                        indices[3],
+                        indices[0]
+                    ], calculateNormal(
+                        vertices[indices[2]],
+                        vertices[indices[3]],
+                        vertices[indices[0]]
+                    )]);
+                }
+
+                facets.push([[
+                    vertices.length - 4,
+                    vertices.length - 3,
+                    vertices.length - 2
+                ], [ 0, 1, 0 ]]);
+                facets.push([[
+                    vertices.length - 2,
+                    vertices.length - 1,
+                    vertices.length - 4
+                ], [0, 1, 0]]);
+
+                offsetX += deltaX;
+            }
+            offsetX = -widthMm / 2;
+            offsetZ += deltaZ;
+        }
+    }
+
+    { // edges
+        // left
+        let currentOffset = baselineOffset;
+        for (let z = 0; z < heightData.height; z++) {
+            const surfaceOffset = z * 4 * heightData.width;
+            vertices.push([-widthMm / 2, 0, vertices[surfaceOffset + 0][2]]);
 
             if (z > 0) {
-                const indices = [
-                    vertices.length - 4*heightData.width - 3,
-                    vertices.length - 4,
-                    vertices.length - 1,
-                    vertices.length - 4*heightData.width - 2,
-                ];
                 facets.push([[
-                    indices[0],
-                    indices[1],
-                    indices[2]
-                ], calculateNormal(
-                    vertices[indices[0]],
-                    vertices[indices[1]],
-                    vertices[indices[2]]
-                )]);
+                    surfaceOffset - 4 * heightData.width,
+                    currentOffset + z - 1,
+                    currentOffset + z
+                ], [-1, 0, 0]]);
+
                 facets.push([[
-                    indices[2],
-                    indices[3],
-                    indices[0]
-                ], calculateNormal(
-                    vertices[indices[2]],
-                    vertices[indices[3]],
-                    vertices[indices[0]]
-                )]);
+                    currentOffset + z,
+                    surfaceOffset - 4 * heightData.width + 1,
+                    surfaceOffset - 4 * heightData.width
+                ], [-1, 0, 0]]);
             }
+        }
+        facets.push([[
+            4 * (heightData.height - 1) * heightData.width,
+            currentOffset + heightData.height - 1,
+            currentOffset + heightData.height
+        ], [-1, 0, 0]]);
+        facets.push([[
+            currentOffset + heightData.height,
+            4 * (heightData.height - 1) * heightData.width + 1,
+            4 * (heightData.height - 1) * heightData.width
+        ], [-1, 0, 0]]);
+
+        // bottom
+        currentOffset += heightData.height;
+        for (let x = 0; x < heightData.width; x++) {
+            const surfaceOffset = 4 * ((heightData.height - 1) * heightData.width + x);
+            vertices.push([vertices[surfaceOffset + 1][0], 0, heightMm / 2]);
 
             if (x > 0) {
-                const indices = [
-                    vertices.length - 6,
-                    vertices.length - 3,
-                    vertices.length - 4,
-                    vertices.length - 5,
-                ];
                 facets.push([[
-                    indices[0],
-                    indices[1],
-                    indices[2]
-                ], calculateNormal(
-                    vertices[indices[0]],
-                    vertices[indices[1]],
-                    vertices[indices[2]]
-                )]);
+                    surfaceOffset - 3,
+                    currentOffset + x - 1,
+                    currentOffset + x
+                ], [0, 0, 1]]);
+
                 facets.push([[
-                    indices[2],
-                    indices[3],
-                    indices[0]
-                ], calculateNormal(
-                    vertices[indices[2]],
-                    vertices[indices[3]],
-                    vertices[indices[0]]
-                )]);
+                    currentOffset + x,
+                    surfaceOffset - 2,
+                    surfaceOffset - 3
+                ], [0, 0, 1]]);
             }
-
-            facets.push([[
-                vertices.length - 4,
-                vertices.length - 3,
-                vertices.length - 2
-            ], [ 0, 1, 0 ]]);
-            facets.push([[
-                vertices.length - 2,
-                vertices.length - 1,
-                vertices.length - 4
-            ], [0, 1, 0]]);
-
-            offsetX += deltaX;
         }
-        offsetX = -widthMm / 2;
-        offsetZ += deltaZ;
+        facets.push([[
+            4 * (heightData.height * heightData.width - 1) + 1,
+            currentOffset + heightData.width - 1,
+            currentOffset + heightData.width
+        ], [0, 0, 1]]);
+        facets.push([[
+            currentOffset + heightData.width,
+            4 * (heightData.height * heightData.width - 1) + 2,
+            4 * (heightData.height * heightData.width - 1) + 1
+        ], [0, 0, 1]]);
+
+        // right
+        currentOffset += heightData.width;
+        for (let z = heightData.height - 1; z >= 0; z--) {
+            const surfaceOffset = 4 * ((z + 1) * heightData.width - 1);
+            vertices.push([widthMm / 2, 0, vertices[surfaceOffset + 2][2]]);
+
+            if (z < heightData.height - 1) {
+                const invertedZ = heightData.height - z - 1;
+                facets.push([[
+                    surfaceOffset + 4 * heightData.width + 2,
+                    currentOffset + invertedZ - 1,
+                    currentOffset + invertedZ
+                ], [1, 0, 0]]);
+                
+                facets.push([[
+                    currentOffset + invertedZ,
+                    surfaceOffset + 4 * heightData.width + 3,
+                    surfaceOffset + 4 * heightData.width + 2
+                ], [1, 0, 0]]);
+            }
+        }
+        facets.push([[
+            4 * (heightData.width - 1) + 2,
+            currentOffset + heightData.height - 1,
+            currentOffset + heightData.height
+        ], [1, 0, 0]]);
+        facets.push([[
+            currentOffset + heightData.height,
+            4 * (heightData.width - 1) + 3,
+            4 * (heightData.width - 1) + 2
+        ], [1, 0, 0]]);
+
+        // top
+        currentOffset += heightData.height;
+        for (let x = heightData.width - 1; x >= 0; x--) {
+            const surfaceOffset = 4 * x;
+            vertices.push([vertices[surfaceOffset + 3][0], 0, -heightMm / 2]);
+
+            if (x < heightData.width - 1) {
+                const invertedX = heightData.width - x - 1;
+                facets.push([[
+                    surfaceOffset + 7,
+                    currentOffset + invertedX - 1,
+                    currentOffset + invertedX
+                ], [0, 0, -1]]);
+                
+                facets.push([[
+                    currentOffset + invertedX,
+                    surfaceOffset + 4,
+                    surfaceOffset + 7
+                ], [0, 0, -1]]);
+            }
+        }
+        facets.push([[
+            3,
+            currentOffset + heightData.width - 1,
+            baselineOffset
+        ], [0, 0, -1]]);
+        facets.push([[
+            baselineOffset,
+            0,
+            3
+        ], [0, 0, -1]]);
+    }
+
+    { // back
+        facets.push([[
+            baselineOffset + 2 * heightData.height + heightData.width,
+            baselineOffset + heightData.height + heightData.width,
+            baselineOffset + heightData.height
+        ], [0, -1, 0]]);
+        
+        facets.push([[
+            baselineOffset + heightData.height,
+            baselineOffset,
+            baselineOffset + 2 * heightData.height + heightData.width
+        ], [0, -1, 0]]);
     }
 
     return {
@@ -118,7 +263,7 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         toObj: () => {
             let objStr = '';
             for (let [x, y, z] of vertices)
-                objStr += `v ${x} ${-y} ${z}\n`;
+                objStr += `v ${x} ${-z} ${y}\n`;
             for (let [[v1, v2, v3]] of facets)
                 objStr += `f ${v1 + 1} ${v2 + 1} ${v3 + 1}\n`;
             return objStr;
@@ -126,11 +271,11 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         toStlAscii: () => {
             let stlStr = 'solid \n';
             for (let [[v1, v2, v3], normal] of facets) {
-                stlStr += `facet normal ${normal[0].toExponential()} ${(-normal[1]).toExponential()} ${(normal[2]).toExponential()}\n`;
+                stlStr += `facet normal ${normal[0].toExponential()} ${(-normal[2]).toExponential()} ${(normal[1]).toExponential()}\n`;
                 stlStr += '  outer loop\n';
-                stlStr += `    vertex ${vertices[v1][0].toExponential()} ${(-vertices[v1][1]).toExponential()} ${(vertices[v1][2]).toExponential()}\n`;
-                stlStr += `    vertex ${vertices[v2][0].toExponential()} ${(-vertices[v2][1]).toExponential()} ${(vertices[v2][2]).toExponential()}\n`;
-                stlStr += `    vertex ${vertices[v3][0].toExponential()} ${(-vertices[v3][1]).toExponential()} ${(vertices[v3][2]).toExponential()}\n`;
+                stlStr += `    vertex ${vertices[v1][0].toExponential()} ${(-vertices[v1][2]).toExponential()} ${(vertices[v1][1]).toExponential()}\n`;
+                stlStr += `    vertex ${vertices[v2][0].toExponential()} ${(-vertices[v2][2]).toExponential()} ${(vertices[v2][1]).toExponential()}\n`;
+                stlStr += `    vertex ${vertices[v3][0].toExponential()} ${(-vertices[v3][2]).toExponential()} ${(vertices[v3][1]).toExponential()}\n`;
                 stlStr += '  endloop\n';
                 stlStr += 'endfacet\n';
             }
@@ -155,20 +300,20 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                 let [[v1, v2, v3], normal] = facets[i];
                 let byteOffset = i * 50 + 84;
                 byteDataView.setFloat32(byteOffset + 0, normal[0], true);
-                byteDataView.setFloat32(byteOffset + 4, -normal[1], true);
-                byteDataView.setFloat32(byteOffset + 8, normal[2], true);
+                byteDataView.setFloat32(byteOffset + 4, -normal[2], true);
+                byteDataView.setFloat32(byteOffset + 8, normal[1], true);
 
                 byteDataView.setFloat32(byteOffset + 12, vertices[v1][0], true);
-                byteDataView.setFloat32(byteOffset + 16, -vertices[v1][1], true);
-                byteDataView.setFloat32(byteOffset + 20, vertices[v1][2], true);
+                byteDataView.setFloat32(byteOffset + 16, -vertices[v1][2], true);
+                byteDataView.setFloat32(byteOffset + 20, vertices[v1][1], true);
 
                 byteDataView.setFloat32(byteOffset + 24, vertices[v2][0], true);
-                byteDataView.setFloat32(byteOffset + 28, -vertices[v2][1], true);
-                byteDataView.setFloat32(byteOffset + 32, vertices[v2][2], true);
+                byteDataView.setFloat32(byteOffset + 28, -vertices[v2][2], true);
+                byteDataView.setFloat32(byteOffset + 32, vertices[v2][1], true);
 
                 byteDataView.setFloat32(byteOffset + 36, vertices[v3][0], true);
-                byteDataView.setFloat32(byteOffset + 40, -vertices[v3][1], true);
-                byteDataView.setFloat32(byteOffset + 44, vertices[v3][2], true);
+                byteDataView.setFloat32(byteOffset + 40, -vertices[v3][2], true);
+                byteDataView.setFloat32(byteOffset + 44, vertices[v3][1], true);
             }
 
             return bytes;
@@ -197,6 +342,9 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                 colors.push(map(surfaceMin, surfaceMax, 1, 0, vertices[v3][1]));
                 colors.push(map(surfaceMin, surfaceMax, 1, 0, vertices[v3][1]));
                 colors.push(map(surfaceMin, surfaceMax, 1, 0, vertices[v3][1]));
+
+                // for (let i = 0; i < 9; i++)
+                //     colors.push(1, 1, 1);
             }
 
             return {

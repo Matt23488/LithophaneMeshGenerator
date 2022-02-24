@@ -10,46 +10,30 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
     const threeMesh = useMemo(() => mesh.toThreeMesh(), [mesh]);
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const [controlType, setControlType] = useState(MouseControlType.None);
-
-    const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (e.button === 0)
-            setControlType(MouseControlType.Rotate);
-        else if (e.button === 2)
-            setControlType(MouseControlType.Translate);
-
-        console.log('mouse down');
-        console.log('button', e.button);
-        console.log('buttons', e.buttons);
-    };
-
-    const onMouseUp = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        console.log('mouse up');
-        console.log('button', e.button);
-        console.log('buttons', e.buttons);
-        setControlType(MouseControlType.None);
-    };
+    const [mouseButtons, setMouseButtons] = useState(mouseButtonsEnum.none);
 
     const onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (controlType === MouseControlType.None || !meshRef.current) return;
+        if (!meshRef.current) return;
 
-        if (controlType === MouseControlType.Rotate) {
-            meshRef.current.rotateY(e.movementX / 100);
-            meshRef.current.rotateX(e.movementY / 100);
-            return;
-        }
+        // Kind of works but I need to convert to world coords
+        switch (mouseButtons) {
+            case mouseButtonsEnum.left:
+                meshRef.current.rotateY(e.movementX / 100);
+                meshRef.current.rotateX(e.movementY / 100);
+                break;
 
-        if (controlType === MouseControlType.Translate) {
-            // Kind of works but I need to convert to world coords
-            meshRef.current.translateX(e.movementX / 100);
-            meshRef.current.translateY(e.movementY / 100);
+            case mouseButtonsEnum.right:
+            case mouseButtonsEnum.middle:
+                meshRef.current.translateX(e.movementX / 100);
+                meshRef.current.translateY(e.movementY / 100);
+                break;
         }
     };
 
     return (
-        <div className="MeshViewer" onMouseDown={onMouseDown} onMouseUp={onMouseUp} onMouseMove={onMouseMove} onContextMenu={e => e.preventDefault()}>
+        <div className="MeshViewer" onMouseDown={e => setMouseButtons(e.buttons)} onMouseUp={e => setMouseButtons(e.buttons)} onMouseMove={onMouseMove} onContextMenu={e => e.preventDefault()}>
             <Canvas camera={{ position: [0, 50, 50], rotation: [-Math.PI / 4, 0, 0] }}>
-                {/* <pointLight position={[0, 10, 0]} /> */}
+                <pointLight position={[0, 10, 0]} />
                 <mesh ref={meshRef}>
                     <bufferGeometry attach="geometry">
                         <bufferAttribute attachObject={['attributes', 'position']} {...threeMesh.position} />
@@ -63,7 +47,12 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
     );
 };
 
-enum MouseControlType { None, Rotate, Translate }
+const mouseButtonsEnum = {
+    none: 0,
+    left: 1,
+    right: 2,
+    middle: 4
+};
 
 export interface MeshViewerProperties {
     mesh: LithophaneMesh;
