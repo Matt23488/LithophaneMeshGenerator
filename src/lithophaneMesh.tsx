@@ -43,6 +43,8 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                 vertices.push([offsetX + deltaX, cellY, offsetZ + deltaZ]);
                 vertices.push([offsetX + deltaX, cellY, offsetZ]);
 
+                // TODO: I could optimize the normal calculation. Since I know there are two possible normals
+                // all I have to do is compare the y coordinates to see which one to go with.
                 if (z > 0) {
                     const indices = [
                         vertices.length - 4*heightData.width - 3,
@@ -120,7 +122,7 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         let currentOffset = baselineOffset;
         for (let z = 0; z < heightData.height; z++) {
             const surfaceOffset = z * 4 * heightData.width;
-            vertices.push([-widthMm / 2, 0, vertices[surfaceOffset + 0][2]]);
+            vertices.push([-widthMm / 2, backThickness, vertices[surfaceOffset + 0][2]]);
 
             if (z > 0) {
                 facets.push([[
@@ -151,7 +153,7 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         currentOffset += heightData.height;
         for (let x = 0; x < heightData.width; x++) {
             const surfaceOffset = 4 * ((heightData.height - 1) * heightData.width + x);
-            vertices.push([vertices[surfaceOffset + 1][0], 0, heightMm / 2]);
+            vertices.push([vertices[surfaceOffset + 1][0], backThickness, heightMm / 2]);
 
             if (x > 0) {
                 facets.push([[
@@ -182,7 +184,7 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         currentOffset += heightData.width;
         for (let z = heightData.height - 1; z >= 0; z--) {
             const surfaceOffset = 4 * ((z + 1) * heightData.width - 1);
-            vertices.push([widthMm / 2, 0, vertices[surfaceOffset + 2][2]]);
+            vertices.push([widthMm / 2, backThickness, vertices[surfaceOffset + 2][2]]);
 
             if (z < heightData.height - 1) {
                 const invertedZ = heightData.height - z - 1;
@@ -214,7 +216,7 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         currentOffset += heightData.height;
         for (let x = heightData.width - 1; x >= 0; x--) {
             const surfaceOffset = 4 * x;
-            vertices.push([vertices[surfaceOffset + 3][0], 0, -heightMm / 2]);
+            vertices.push([vertices[surfaceOffset + 3][0], backThickness, -heightMm / 2]);
 
             if (x < heightData.width - 1) {
                 const invertedX = heightData.width - x - 1;
@@ -244,16 +246,62 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
     }
 
     { // back
+        const backOffset = vertices.length;
+        vertices.push([-widthMm / 2, 0, -heightMm / 2]);
+        vertices.push([-widthMm / 2, 0, heightMm / 2]);
+        vertices.push([widthMm / 2, 0, heightMm / 2]);
+        vertices.push([widthMm / 2, 0, -heightMm / 2]);
         facets.push([[
-            baselineOffset + 2 * heightData.height + heightData.width,
+            baselineOffset,
+            backOffset,
+            backOffset + 1
+        ], [-1, 0, 0]]);
+        facets.push([[
+            backOffset + 1,
+            baselineOffset + heightData.height,
+            baselineOffset
+        ], [-1, 0, 0]]);
+        facets.push([[
+            baselineOffset + heightData.height,
+            backOffset + 1,
+            backOffset + 2
+        ], [0, 0, 1]]);
+        facets.push([[
+            backOffset + 2,
             baselineOffset + heightData.height + heightData.width,
             baselineOffset + heightData.height
+        ], [0, 0, 1]]);
+        facets.push([[
+            baselineOffset + heightData.height + heightData.width,
+            backOffset + 2,
+            backOffset + 3
+        ], [1, 0, 0]]);
+        facets.push([[
+            backOffset + 3,
+            baselineOffset + 2 * heightData.height + heightData.width,
+            baselineOffset + heightData.height + heightData.width
+        ], [1, 0, 0]]);
+        facets.push([[
+            baselineOffset + 2 * heightData.height + heightData.width,
+            backOffset + 3,
+            backOffset
+        ], [0, 0, -1]]);
+        facets.push([[
+            backOffset,
+            baselineOffset,
+            baselineOffset + 2 * heightData.height + heightData.width
+        ], [0, 0, -1]]);
+
+        facets.push([[
+            backOffset + 3,
+            backOffset + 2,
+            backOffset + 1
         ], [0, -1, 0]]);
         
         facets.push([[
-            baselineOffset + heightData.height,
-            baselineOffset,
-            baselineOffset + 2 * heightData.height + heightData.width
+            backOffset + 1,
+            backOffset,
+            backOffset + 3
         ], [0, -1, 0]]);
     }
 

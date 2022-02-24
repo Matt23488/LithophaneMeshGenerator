@@ -43,7 +43,7 @@ function App() {
   const [downloadType, setDownloadType] = useState(0);
 
   const downloadMesh = () => new Promise(() => {
-    if (!mesh) return;
+    if (!mesh || !file) return;
 
     if (downloadType === 0) {
       const stlBytes = mesh.toStlBinary();
@@ -51,7 +51,7 @@ function App() {
       const blob = new Blob([stlBytes], { type: 'model/stl' });
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = 'mesh.bin.stl';
+      link.download = `${file.name}.stl`;
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
@@ -62,7 +62,7 @@ function App() {
 
       const link = document.createElement('a');
       link.href = `data:model/stl;charset=utf-8,${encodeURIComponent(stlStr)}`;
-      link.download = 'mesh.ascii.stl';
+      link.download = `${file.name}.stl`;
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
@@ -72,7 +72,7 @@ function App() {
   
       const link = document.createElement('a');
       link.href = `data:text/plain;charset=utf-8,${encodeURIComponent(objStr)}`;
-      link.download = 'mesh.obj';
+      link.download = `${file.name}.obj`;
       link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
