@@ -46,6 +46,9 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                 // TODO: I could optimize the normal calculation. Since I know there are two possible normals
                 // all I have to do is compare the y coordinates to see which one to go with.
                 if (z > 0) {
+                    const normal: Vector3 = vertices[4 * (i - heightData.width)][1] > vertices[4 * i][1]
+                        ? [0, 0, 1]
+                        : [0, 0, -1];
                     const indices = [
                         vertices.length - 4*heightData.width - 3,
                         vertices.length - 4,
@@ -56,23 +59,18 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                         indices[0],
                         indices[1],
                         indices[2]
-                    ], calculateNormal(
-                        vertices[indices[0]],
-                        vertices[indices[1]],
-                        vertices[indices[2]]
-                    )]);
+                    ], normal]);
                     facets.push([[
                         indices[2],
                         indices[3],
                         indices[0]
-                    ], calculateNormal(
-                        vertices[indices[2]],
-                        vertices[indices[3]],
-                        vertices[indices[0]]
-                    )]);
+                    ], normal]);
                 }
 
                 if (x > 0) {
+                    const normal: Vector3 = vertices[4 * (i - 1)][1] > vertices[4 * i][1]
+                        ? [1, 0, 0]
+                        : [-1, 0, 0];
                     const indices = [
                         vertices.length - 6,
                         vertices.length - 3,
@@ -83,20 +81,12 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                         indices[0],
                         indices[1],
                         indices[2]
-                    ], calculateNormal(
-                        vertices[indices[0]],
-                        vertices[indices[1]],
-                        vertices[indices[2]]
-                    )]);
+                    ], normal]);
                     facets.push([[
                         indices[2],
                         indices[3],
                         indices[0]
-                    ], calculateNormal(
-                        vertices[indices[2]],
-                        vertices[indices[3]],
-                        vertices[indices[0]]
-                    )]);
+                    ], normal]);
                 }
 
                 facets.push([[

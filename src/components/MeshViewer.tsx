@@ -14,21 +14,22 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
 
     const onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (!meshRef.current) return;
-
-        // Kind of works but I need to convert to world coords
+        
         switch (mouseButtons) {
             case mouseButtonsEnum.left:
-                meshRef.current.rotateY(e.movementX / 100);
-                meshRef.current.rotateX(e.movementY / 100);
+                meshRef.current.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), e.movementX / 100);
+                meshRef.current.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), e.movementY / 100);
                 break;
 
             case mouseButtonsEnum.right:
             case mouseButtonsEnum.middle:
-                meshRef.current.translateX(e.movementX / 100);
-                meshRef.current.translateY(e.movementY / 100);
+                meshRef.current.translateX(e.movementX / 10);
+                meshRef.current.translateY(-e.movementY / 10);
                 break;
         }
     };
+
+    console.log('matrix', meshRef.current?.matrix);
 
     return (
         <div className="MeshViewer" onMouseDown={e => setMouseButtons(e.buttons)} onMouseUp={e => setMouseButtons(e.buttons)} onMouseMove={onMouseMove} onContextMenu={e => e.preventDefault()}>
