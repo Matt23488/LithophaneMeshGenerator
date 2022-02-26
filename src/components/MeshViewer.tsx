@@ -23,6 +23,7 @@ const MeshViewer: React.FC<MeshViewerProperties> = props => {
 
             case mouseButtonsEnum.right:
             case mouseButtonsEnum.middle:
+                // I think these are still in local coordinates. Need to fix.
                 meshRef.current.translateX(e.movementX / 10);
                 meshRef.current.translateY(-e.movementY / 10);
                 break;

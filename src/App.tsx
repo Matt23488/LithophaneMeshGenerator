@@ -46,6 +46,7 @@ function App() {
   const downloadMesh = () => new Promise(() => {
     if (!mesh || !file) return;
 
+    // TODO: Clean up this code
     if (downloadType === 0) {
       const stlBytes = mesh.toStlBinary();
 
@@ -108,7 +109,7 @@ function App() {
     <div className="App">
       <div className="ui">
         <InputImageBrowser file={file} onChange={setFile} onImageLoaded={setImageDataUrl} />
-        {imageDataUrl.length > 0 &&
+        {imageDataUrl.length > 0 && // TODO: Just check file instead
           <>
             <NumberInput name="Brightness Modifier" suffix="x" min={0} max={2} step={0.1} value={brightnessModifier} onValueChanged={setBrightnessModifier} />
             <NumberInput name="Contrast" min={-128} max={128} value={contrast} onValueChanged={setContrast} />
