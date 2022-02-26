@@ -43,8 +43,6 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
                 vertices.push([offsetX + deltaX, cellY, offsetZ + deltaZ]);
                 vertices.push([offsetX + deltaX, cellY, offsetZ]);
 
-                // TODO: I could optimize the normal calculation. Since I know there are two possible normals
-                // all I have to do is compare the y coordinates to see which one to go with.
                 if (z > 0) {
                     const normal: Vector3 = vertices[4 * (i - heightData.width)][1] > vertices[4 * i][1]
                         ? [0, 0, 1]
