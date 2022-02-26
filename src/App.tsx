@@ -11,7 +11,8 @@ function App() {
   const [imageDataUrl, setImageDataUrl] = useState('');
 
   const [file, setFile] = useState<File>();
-  const [brightnessModifer, setBrightnessModifier] = useState(1);
+  const [brightnessModifier, setBrightnessModifier] = useState(1);
+  const [contrast, setContrast] = useState(0);
   const [backThickness, setBackThickness] = useState(0.4);
   const [surfaceThickness, setSurfaceThickness] = useState(1.6);
   const [sideLength, setSideLength] = useState(100);
@@ -109,7 +110,8 @@ function App() {
         <InputImageBrowser file={file} onChange={setFile} onImageLoaded={setImageDataUrl} />
         {imageDataUrl.length > 0 &&
           <>
-            <NumberInput name="Brightness Modifier" suffix="x" min={0} max={2} step={0.1} value={brightnessModifer} onValueChanged={setBrightnessModifier} />
+            <NumberInput name="Brightness Modifier" suffix="x" min={0} max={2} step={0.1} value={brightnessModifier} onValueChanged={setBrightnessModifier} />
+            <NumberInput name="Contrast" min={-128} max={128} value={contrast} onValueChanged={setContrast} />
             <NumberInput name="Back Thickness" suffix="mm" min={0} step={0.1} value={backThickness} onValueChanged={setBackThickness} />
             <NumberInput name="Surface Thickness" suffix="mm" min={1} step={0.1} value={surfaceThickness} onValueChanged={setSurfaceThickness} />
             <NumberInput name="Side Length" suffix="mm" min={10} step={1} value={sideLength} onValueChanged={setSideLength} />
@@ -123,7 +125,8 @@ function App() {
       </div>
       <div className="viewport-container">
         <ImageCanvasDisplay
-          brightnessModifier={brightnessModifer}
+          brightnessModifier={brightnessModifier}
+          contrast={contrast}
           imageDataUrl={imageDataUrl}
           sampleCount={sampleCount}
           onHeightDataChanged={setHeightData}

@@ -7,7 +7,7 @@ import './css/ImageCanvasDisplay.css';
 
 const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
-    const { sampleCount, brightnessModifier, imageDataUrl, onHeightDataChanged } = props;
+    const { sampleCount, brightnessModifier, contrast, imageDataUrl, onHeightDataChanged } = props;
 
     const hiddenImageRef = useRef<HTMLImageElement>(null);
     const hiddenCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -37,15 +37,19 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 
         let pixels = context.getImageData(0, 0, widthSamples, heightSamples);
         pixels = toGrayscale(pixels);
+
+        // Contrast formula: F = 259*(255+C)/255*(259-C)
+        // https://ie.nitk.ac.in/blog/2020/01/19/algorithms-for-adjusting-brightness-and-contrast-of-an-image/
+        const contrastFactor = 259 * (255 + contrast) / (255 * (259 - contrast));
         for (let i = 0; i < pixels.data.length; i += 4) {
-            pixels.data[i + 0] *= brightnessModifier;
-            pixels.data[i + 1] *= brightnessModifier;
-            pixels.data[i + 2] *= brightnessModifier;
+            pixels.data[i + 0] = (contrastFactor * (pixels.data[i + 0] - 128) + 128) * brightnessModifier;
+            pixels.data[i + 1] = (contrastFactor * (pixels.data[i + 1] - 128) + 128) * brightnessModifier;
+            pixels.data[i + 2] = (contrastFactor * (pixels.data[i + 2] - 128) + 128) * brightnessModifier;
         }
         context.putImageData(pixels, 0, 0);
 
         redrawImage();
-    }, [hiddenCanvasRef, hiddenImageRef, brightnessModifier, sampleCount]);
+    }, [hiddenCanvasRef, hiddenImageRef, brightnessModifier, contrast, sampleCount]);
     
     const redrawImage = useCallback(() => {
         if (!hiddenCanvasRef.current || !visibleCanvasRef.current) return;
@@ -84,9 +88,9 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         };
 
         onHeightDataChanged(heightData);
-    }, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef, onHeightDataChanged]);
+    }, [brightnessModifier, contrast, sampleCount, hiddenCanvasRef, visibleCanvasRef, onHeightDataChanged]);
 
-    useEffect(onImageLoad, [brightnessModifier, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
+    useEffect(onImageLoad, [brightnessModifier, contrast, sampleCount, hiddenCanvasRef, visibleCanvasRef]);
 
     const onWindowResized = useCallback((width: number, height: number) => {
         if (!visibleCanvasRef.current) return;
@@ -118,6 +122,7 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
 export interface ImageCanvasDisplayProperties {
     imageDataUrl: string;
     brightnessModifier: number;
+    contrast: number;
     sampleCount: number;
     onHeightDataChanged: (heightData: HeightData) => void;
 }
