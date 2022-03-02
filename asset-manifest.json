@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/LithophaneMeshGenerator/static/css/main.3c096994.css",
-    "main.js": "/LithophaneMeshGenerator/static/js/main.5a58bdfa.js",
+    "main.js": "/LithophaneMeshGenerator/static/js/main.b36e5ad3.js",
     "static/js/787.e7a10b2a.chunk.js": "/LithophaneMeshGenerator/static/js/787.e7a10b2a.chunk.js",
     "index.html": "/LithophaneMeshGenerator/index.html",
     "main.3c096994.css.map": "/LithophaneMeshGenerator/static/css/main.3c096994.css.map",
-    "main.5a58bdfa.js.map": "/LithophaneMeshGenerator/static/js/main.5a58bdfa.js.map",
+    "main.b36e5ad3.js.map": "/LithophaneMeshGenerator/static/js/main.b36e5ad3.js.map",
     "787.e7a10b2a.chunk.js.map": "/LithophaneMeshGenerator/static/js/787.e7a10b2a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.3c096994.css",
-    "static/js/main.5a58bdfa.js"
+    "static/js/main.b36e5ad3.js"
   ]
 }
