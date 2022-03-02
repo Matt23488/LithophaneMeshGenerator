@@ -68,7 +68,7 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
 
     return (
         <div className="NumberInput">
-            <div>{props.name}</div>
+            <div className="label">{props.name}</div>
             <div className="interactable">
                 <button className="button" onClick={onFastDecrement} style={{ marginRight: '1px' }}>
                     <FaAngleDoubleLeft />

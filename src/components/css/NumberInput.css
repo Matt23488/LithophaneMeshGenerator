@@ -1,13 +1,18 @@
 .NumberInput {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.NumberInput .label {
+    text-align: center;
 }
 
 .NumberInput .interactable {
     display: flex;
     flex-direction: row;
-    /* width: 250px; */
 }
 
 .NumberInput .value-display {
@@ -18,4 +23,15 @@
     text-align: center;
     border: 0;
     padding: 0;
+    cursor: pointer;
+    font-size: 1.2em;
+    background-color: #a0f;
+    color: white;
+    margin: 0 1px;
+    border-radius: 3px;
+}
+
+.NumberInput .value-display:hover {
+  background-color: #c6f;
+  color: white;
 }

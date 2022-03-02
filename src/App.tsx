@@ -79,7 +79,7 @@ function App() {
     if (mesh)
         return (
             <div className="App">
-                <button className="button top-right" onClick={() => setMesh(undefined)}>
+                <button className="button top-right" onClick={() => setMesh(undefined)} style={{ fontSize: '1.5em'}}>
                     <FaTimesCircle />
                 </button>
                 <div className="top-left" style={{ display: 'flex' }}>
@@ -88,7 +88,7 @@ function App() {
                         <option value={1}>STL (ASCII)</option>
                         <option value={2}>OBJ</option>
                     </select>
-                    <button className="button" onClick={downloadMesh}>
+                    <button className="button" onClick={downloadMesh} style={{ marginLeft: '1px' }}>
                         <FaDownload />
                     </button>
                 </div>
@@ -110,7 +110,7 @@ function App() {
                         <NumberInput name="Surface Thickness" suffix="mm" min={1} step={0.1} value={surfaceThickness} onValueChanged={setSurfaceThickness} />
                         <NumberInput name="Side Length" suffix="mm" min={10} step={1} value={sideLength} onValueChanged={setSideLength} />
                         <NumberInput name="1D Samples" min={2} step={1} value={sampleCount} onValueChanged={setSampleCount} />
-                        <button className="button" onClick={() => setMesh(generateMesh(lithophaneProps))}>
+                        <button className="button button-secondary" onClick={() => setMesh(generateMesh(lithophaneProps))}>
                             <FaUnity />
                             <div style={{ marginLeft: '5px' }}>Generate Mesh</div>
                         </button>
