@@ -33,7 +33,7 @@ const InputImageBrowser: React.FC<InputImageBrowserProperties> = props => {
     return (
         <div className="InputImageBrowser">
             <input ref={hiddenInputRef} type="file" onChange={onImageSelected} />
-            <button className="button button-secondary" onClick={() => hiddenInputRef.current?.click()}>
+            <button className="button" onClick={() => hiddenInputRef.current?.click()}>
                 <FaImage />
                 <div style={{ marginLeft: '5px' }}>Browse</div>
             </button>

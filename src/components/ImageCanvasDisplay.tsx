@@ -70,7 +70,7 @@ const ImageCanvasDisplay: React.FC<ImageCanvasDisplayProperties> = props => {
         const visibleCanvasContext = visibleCanvasRef.current.getContext('2d');
         if (!visibleCanvasContext) return;
 
-        visibleCanvasContext.fillStyle = '#333';
+        visibleCanvasContext.fillStyle = '#222';
         visibleCanvasContext.imageSmoothingEnabled = false;
         visibleCanvasContext.fillRect(0, 0, visibleCanvasRef.current.width, visibleCanvasRef.current.height);
         visibleCanvasContext.drawImage(hiddenCanvasRef.current, x, y, resizedWidth, resizedHeight);

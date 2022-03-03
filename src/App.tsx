@@ -110,7 +110,7 @@ function App() {
                         <NumberInput name="Surface Thickness" suffix="mm" min={1} step={0.1} value={surfaceThickness} onValueChanged={setSurfaceThickness} />
                         <NumberInput name="Side Length" suffix="mm" min={10} step={1} value={sideLength} onValueChanged={setSideLength} />
                         <NumberInput name="1D Samples" min={2} step={1} value={sampleCount} onValueChanged={setSampleCount} />
-                        <button className="button button-secondary" onClick={() => setMesh(generateMesh(lithophaneProps))}>
+                        <button className="button" onClick={() => setMesh(generateMesh(lithophaneProps))}>
                             <FaUnity />
                             <div style={{ marginLeft: '5px' }}>Generate Mesh</div>
                         </button>

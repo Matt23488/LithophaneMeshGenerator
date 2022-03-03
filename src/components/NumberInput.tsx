@@ -70,10 +70,10 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
         <div className="NumberInput">
             <div className="label">{props.name}</div>
             <div className="interactable">
-                <button className="button" onClick={onFastDecrement} style={{ marginRight: '1px' }}>
+                <button className="button button-secondary" onClick={onFastDecrement} style={{ marginRight: '1px' }}>
                     <FaAngleDoubleLeft />
                 </button>
-                <button className="button" onClick={onDecrement}>
+                <button className="button button-secondary" onClick={onDecrement}>
                     <FaAngleLeft />
                 </button>
                 {editing ?
@@ -91,10 +91,10 @@ const NumberInput: React.FC<NumberInputProperties> = props => {
                         onClick={onDirectEdit}
                     >{props.value.toFixed(precision)}{props.suffix}</div>
                 }
-                <button className="button" onClick={onIncrement}>
+                <button className="button button-secondary" onClick={onIncrement}>
                     <FaAngleRight />
                 </button>
-                <button className="button" onClick={onFastIncrement} style={{ marginLeft: '1px' }}>
+                <button className="button button-secondary" onClick={onFastIncrement} style={{ marginLeft: '1px' }}>
                     <FaAngleDoubleRight />
                 </button>
             </div>
