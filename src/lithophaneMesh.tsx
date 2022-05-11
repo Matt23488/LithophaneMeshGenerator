@@ -11,9 +11,10 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
     let backThickness = 0;
     let widthMm = 0;
     let heightMm = 0;
+    let layerHeight = 0;
 
     if (!undefinedProps)
-        ({ heightData, surfaceThickness, backThickness, widthMm, heightMm } = lithophaneProps);
+        ({ heightData, surfaceThickness, backThickness, widthMm, heightMm, layerHeight } = lithophaneProps);
 
     if (undefinedProps) return {
         vertices,
@@ -37,7 +38,9 @@ export const generateMesh = (lithophaneProps?: LithophaneProperties): Lithophane
         for (let z = 0; z < heightData.height; z++) {
             for (let x = 0; x < heightData.width; x++) {
                 const i = z * heightData.width + x;
-                const cellY = map(0, 1, surfaceMin, surfaceMax, heightData.data[i]);
+                const preciseCellY = map(0, 1, surfaceMin, surfaceMax, heightData.data[i]);
+                const yStep = Math.round(preciseCellY / layerHeight);
+                const cellY = yStep * layerHeight;
                 vertices.push([offsetX, cellY, offsetZ]);
                 vertices.push([offsetX, cellY, offsetZ + deltaZ]);
                 vertices.push([offsetX + deltaX, cellY, offsetZ + deltaZ]);
@@ -421,6 +424,7 @@ export interface LithophaneProperties {
     backThickness: number;
     widthMm: number;
     heightMm: number;
+    layerHeight: number;
 }
 
 export interface LithophaneMesh {

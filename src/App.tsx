@@ -17,6 +17,7 @@ function App() {
     const [surfaceThickness, setSurfaceThickness] = useState(1.6);
     const [sideLength, setSideLength] = useState(100);
     const [sampleCount, setSampleCount] = useState(300);
+    const [layerHeight, setLayerHeight] = useState(0.16);
     const [mesh, setMesh] = useState<LithophaneMesh>();
     const [heightData, setHeightData] = useState<HeightData>();
 
@@ -37,9 +38,10 @@ function App() {
                     surfaceThickness: surfaceThickness,
                     backThickness: backThickness,
                     widthMm,
-                    heightMm
+                    heightMm,
+                    layerHeight
             };
-    }, [heightData, sideLength, surfaceThickness, backThickness]);
+    }, [heightData, sideLength, surfaceThickness, backThickness, layerHeight]);
 
     const [downloadType, setDownloadType] = useState(0);
 
@@ -110,6 +112,7 @@ function App() {
                         <NumberInput name="Surface Thickness" suffix="mm" min={1} step={0.1} value={surfaceThickness} onValueChanged={setSurfaceThickness} />
                         <NumberInput name="Side Length" suffix="mm" min={10} step={1} value={sideLength} onValueChanged={setSideLength} />
                         <NumberInput name="1D Samples" min={2} step={1} value={sampleCount} onValueChanged={setSampleCount} />
+                        <NumberInput name="Layer Height" suffix="mm" min={0.08} step={0.04} max={0.28} value={layerHeight} onValueChanged={setLayerHeight} />
                         <button className="button" onClick={() => setMesh(generateMesh(lithophaneProps))}>
                             <FaUnity />
                             <div style={{ marginLeft: '5px' }}>Generate Mesh</div>
